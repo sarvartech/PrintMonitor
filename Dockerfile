@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY canon_server.py .
 COPY kpi_export.py .
-COPY kpi_template.xlsx .
+COPY kpi_template.xlsx* ./
 COPY canon_dashboard.html .
 
 # Expose HTTP dashboard port and Syslog UDP port
