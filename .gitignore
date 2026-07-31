@@ -4,6 +4,8 @@ __pycache__/
 *.pyo
 *.pyd
 *.log
+*.xlsx
+kpi_template.xlsx
 scratch/
 .system_generated/
 .idea/
