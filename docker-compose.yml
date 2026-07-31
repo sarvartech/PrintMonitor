@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  print-monitor:
+    build: .
+    container_name: canon_print_monitor
+    restart: always
+    ports:
+      - "5000:5000/tcp"
+      - "5140:5140/udp"
+    volumes:
+      - ./canon_logs.db:/app/canon_logs.db
+      - ./toner_cache.json:/app/toner_cache.json
+    environment:
+      - TZ=Asia/Tashkent

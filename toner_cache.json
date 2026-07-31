@@ -1,0 +1,42 @@
+{
+    "172.16.0.9": {
+        "cyan": 80,
+        "magenta": 90,
+        "yellow": 80,
+        "black": 70,
+        "status": "online",
+        "updated_at": "2026-07-08T19:25:34.916899"
+    },
+    "172.16.0.7": {
+        "cyan": 50,
+        "magenta": 70,
+        "yellow": 70,
+        "black": 60,
+        "status": "online",
+        "updated_at": "2026-07-08T19:23:29.978706"
+    },
+    "172.16.0.24": {
+        "cyan": 90,
+        "magenta": 90,
+        "yellow": 80,
+        "black": 80,
+        "status": "online",
+        "updated_at": "2026-07-08T19:25:34.898566"
+    },
+    "172.16.0.8": {
+        "cyan": 60,
+        "magenta": 70,
+        "yellow": 60,
+        "black": 30,
+        "status": "online",
+        "updated_at": "2026-07-08T19:25:34.988405"
+    },
+    "172.18.0.120": {
+        "cyan": 100,
+        "magenta": 100,
+        "yellow": 100,
+        "black": 100,
+        "status": "offline",
+        "updated_at": null
+    }
+}

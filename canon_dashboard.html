@@ -1,0 +1,3062 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canon Print Monitor — Professional Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --bg-main: #060913;
+    --bg-card: rgba(15, 20, 35, 0.65);
+    --bg-header: rgba(10, 13, 24, 0.85);
+    --bg-hover: rgba(26, 34, 56, 0.7);
+    --border: rgba(255, 255, 255, 0.06);
+    --border-focus: rgba(0, 240, 194, 0.4);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #00f0c2;
+    --accent-glow: rgba(0, 240, 194, 0.15);
+    --blue: #3b82f6;
+    --blue-glow: rgba(59, 130, 246, 0.15);
+    --purple: #8b5cf6;
+    --purple-glow: rgba(139, 92, 246, 0.15);
+    --success: #10b981;
+    --success-glow: rgba(16, 185, 129, 0.15);
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --danger-glow: rgba(239, 68, 68, 0.15);
+    --font-sans: 'Inter', sans-serif;
+    --font-header: 'Outfit', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-main);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: var(--bg-header);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.4px;
+  }
+
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 240, 194, 0.3);
+  }
+
+  .logo-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: #060913;
+  }
+
+  .logo span { color: var(--text-secondary); font-weight: 400; font-size: 13px; }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .pulse-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--success);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 10px var(--success);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.4; }
+  }
+
+  /* ─── LAYOUT ─── */
+  .main {
+    padding: 2.5rem 2rem;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* ─── TABS ─── */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    width: fit-content;
+  }
+
+  .tab-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--font-sans);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tab-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  .tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    color: #060913;
+    box-shadow: 0 4px 15px rgba(0, 240, 194, 0.25);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.35s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  .btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    border: none;
+    color: #060913;
+    box-shadow: 0 4px 14px rgba(0, 240, 194, 0.2);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #00ffd5, #4f93ff);
+    box-shadow: 0 4px 20px rgba(0, 240, 194, 0.35);
+  }
+
+  .btn-danger {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.06);
+    color: var(--danger);
+  }
+
+  .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--danger);
+  }
+
+  .btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ─── KPI CARDS ─── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 2rem;
+  }
+
+  .kpi-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+  }
+
+  .kpi-card.kpi-accent::after { background: var(--accent); }
+  .kpi-card.kpi-blue::after { background: var(--blue); }
+  .kpi-card.kpi-purple::after { background: var(--purple); }
+  .kpi-card.kpi-warning::after { background: var(--warning); }
+  .kpi-card.kpi-danger::after { background: var(--danger); }
+
+  .kpi-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .kpi-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .kpi-accent .kpi-icon-wrap { background: var(--accent-glow); color: var(--accent); }
+  .kpi-blue .kpi-icon-wrap { background: var(--blue-glow); color: var(--blue); }
+  .kpi-purple .kpi-icon-wrap { background: var(--purple-glow); color: var(--purple); }
+  .kpi-warning .kpi-icon-wrap { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+  .kpi-danger .kpi-icon-wrap { background: var(--danger-glow); color: var(--danger); }
+
+  .kpi-icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  .kpi-value {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    font-family: var(--font-header);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .kpi-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ─── SECTIONS ─── */
+  .section {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .section-head {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .section-title {
+    font-family: var(--font-header);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--accent);
+  }
+
+  .section-body { padding: 24px; }
+
+  /* ─── CHARTS GRID ─── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .chart-container-large {
+    position: relative;
+    height: 280px;
+  }
+
+  .chart-donut-wrap {
+    position: relative;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chart-center-text {
+    position: absolute;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .chart-center-val {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: var(--font-header);
+    color: var(--text-primary);
+  }
+
+  .chart-center-lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  /* ─── TWO COLUMN SPLIT ─── */
+  .split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  /* ─── USER TABLE & LISTS ─── */
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .user-table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+
+  .user-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    vertical-align: middle;
+  }
+
+  .user-table tr:last-child td { border-bottom: none; }
+  .user-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+  }
+
+  .rank-1 { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+  .rank-2 { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+  .rank-3 { background: rgba(180, 83, 9, 0.15); color: #f97316; }
+  .rank-n { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); }
+
+  .progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 4px;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--accent));
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+
+  /* ─── PRINTER STATUS GRID ─── */
+  .printer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .printer-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .printer-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateY(-2px);
+  }
+
+  .printer-card.collecting {
+    border-color: var(--accent);
+    animation: collecting-pulse 1.2s infinite;
+  }
+
+  @keyframes collecting-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 240, 194, 0.3); }
+    50% { box-shadow: 0 0 0 10px rgba(0, 240, 194, 0); }
+  }
+
+  .printer-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px auto;
+    color: var(--text-secondary);
+  }
+
+  .printer-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+
+  .printer-name {
+    font-family: var(--font-header);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .printer-ip {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: 12px;
+  }
+
+  .printer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .status-online { background: rgba(16, 185, 129, 0.12); color: var(--success); }
+  .status-offline { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+  .status-loading { background: rgba(0, 240, 194, 0.12); color: var(--accent); }
+
+  .printer-collect-btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 7px 0;
+    font-size: 12px;
+    justify-content: center;
+  }
+
+  /* ─── LOGS TAB CONTROLS ─── */
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .filter-input-wrap input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 8px 14px 8px 36px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: all 0.2s;
+    width: 200px;
+  }
+
+  .filter-input-wrap input:focus {
+    border-color: var(--border-focus);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 10px rgba(0, 240, 194, 0.1);
+  }
+
+  .filter-input-wrap svg {
+    position: absolute;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    fill: var(--text-muted);
+  }
+
+  .filter-bar select {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: var(--font-sans);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .filter-bar select:focus {
+    border-color: var(--border-focus);
+  }
+
+  .filter-bar select option {
+    background: var(--bg-main);
+    color: var(--text-primary);
+  }
+
+  /* ─── LOG TABLE ─── */
+  .log-table-wrap {
+    overflow-x: auto;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .log-table th {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+  }
+
+  .log-table th:hover {
+    color: var(--text-primary);
+  }
+
+  .log-table th svg {
+    width: 10px;
+    height: 10px;
+    margin-left: 6px;
+    fill: currentColor;
+    display: inline-block;
+  }
+
+  .log-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .log-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .log-table tr:last-child td { border: none; }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .tag-ok { background: rgba(16, 185, 129, 0.12); color: var(--success); }
+  .tag-err { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+  
+  .tag-source-syslog { background: rgba(139, 92, 246, 0.12); color: #a78bfa; }
+  .tag-source-csv { background: rgba(59, 130, 246, 0.12); color: #60a5fa; }
+
+  /* ─── UPLOAD ZONE ─── */
+  .upload-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    background: rgba(255, 255, 255, 0.01);
+  }
+
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(0, 240, 194, 0.03);
+  }
+
+  .upload-zone input { display: none; }
+
+  .upload-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    color: var(--text-secondary);
+  }
+
+  .upload-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+  }
+
+  .upload-text {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+  }
+
+  .upload-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ─── DEVELOPER TERMINAL ─── */
+  .terminal-wrap {
+    background: #090c15;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .terminal-header {
+    background: #0f1320;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal-controls {
+    display: flex;
+    gap: 6px;
+  }
+
+  .terminal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .term-close { background: #ff5f56; }
+  .term-min { background: #ffbd2e; }
+  .term-max { background: #27c93f; }
+
+  .terminal-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .terminal-body {
+    padding: 18px;
+    height: 380px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: #e2e8f0;
+  }
+
+  .term-line {
+    margin-bottom: 6px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .term-time { color: var(--text-muted); }
+  .term-ip { color: var(--blue); }
+  .term-data { color: #e2e8f0; }
+  .term-print { color: var(--accent); }
+  .term-copy { color: var(--purple); }
+
+  /* ─── TOAST ─── */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 13.5px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 320px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  #toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast-title { font-family: var(--font-header); font-weight: 700; color: var(--text-primary); }
+  .toast-msg { color: var(--text-secondary); font-size: 12px; }
+
+  /* ─── SPINNER ─── */
+  .spin {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(0, 240, 194, 0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── PERIOD FILTER BAR ─── */
+  .period-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .period-filter-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    white-space: nowrap;
+  }
+
+  .period-pills {
+    display: flex;
+    gap: 6px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  .period-pill {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+  }
+
+  .period-pill:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .period-pill.active {
+    background: linear-gradient(135deg, var(--accent), #00c8a0);
+    color: #0a1628;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(0, 240, 194, 0.3);
+  }
+
+  .period-filter-info {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ─── MISC ─── */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  /* Responsive Grids */
+  .responsive-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 1024px) {
+    .charts-grid, .split-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      height: auto;
+      padding: 1.25rem 1rem;
+      gap: 14px;
+      align-items: stretch;
+      text-align: center;
+    }
+    .logo {
+      justify-content: center;
+    }
+    .header-right {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .lang-switcher {
+      justify-content: center;
+      margin-right: 0;
+    }
+    .pulse-container {
+      justify-content: center;
+    }
+    #last-update {
+      text-align: center;
+    }
+    .main {
+      padding: 1.5rem 1rem;
+    }
+    .tabs {
+      width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+      display: flex;
+      flex-wrap: nowrap;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .tab-btn {
+      flex: 0 0 auto;
+    }
+    .section-head {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding: 16px;
+    }
+    .section-head div[style*="display:flex"] {
+      flex-direction: column;
+      gap: 8px !important;
+    }
+    .section-head button {
+      width: 100% !important;
+    }
+    .filter-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .filter-input-wrap, .filter-bar select, .filter-bar button {
+      width: 100% !important;
+    }
+    .filter-input-wrap input {
+      width: 100% !important;
+    }
+    .responsive-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .section-body[style*="padding:0"], .log-table-wrap {
+      overflow-x: auto;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .kpi-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    #toast {
+      left: 12px;
+      right: 12px;
+      width: auto;
+      bottom: 12px;
+    }
+  }
+
+  /* Dropdown styles */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #0f1322;
+    min-width: 200px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    z-index: 200;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .dropdown-content.show {
+    display: block;
+    animation: dropdownFadeIn 0.15s ease;
+  }
+  @keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .dropdown-content a {
+    color: var(--text-secondary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  }
+  .dropdown-content a:last-child {
+    border-bottom: none;
+  }
+  .dropdown-content a:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--accent);
+    padding-left: 20px;
+  }
+
+  /* Language Switcher */
+  .lang-switcher {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+    margin-right: 8px;
+  }
+  .lang-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn:hover {
+    color: var(--text-primary);
+  }
+  .lang-btn.active {
+    background: var(--accent);
+    color: #060913;
+  }
+  
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(6, 9, 19, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-card {
+    background: #0f1322;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+    transform: translateY(20px);
+    transition: transform 0.25s ease;
+  }
+  .modal-overlay.show .modal-card {
+    transform: translateY(0);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .modal-title {
+    font-family: var(--font-header);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover {
+    color: var(--text-primary);
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .form-group input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    outline: none;
+    transition: all 0.2s;
+    font-family: var(--font-sans);
+  }
+  .form-group input:focus {
+    border-color: var(--border-focus);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 10px rgba(0, 240, 194, 0.1);
+  }
+  .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: var(--text-primary) !important;
+  }
+  .btn-icon-danger:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #ff5f56 !important;
+  }
+  
+  /* Switch Slider CSS */
+  .switch input:checked + .slider {
+    background-color: var(--accent);
+  }
+  .switch input:focus + .slider {
+    box-shadow: 0 0 1px var(--accent);
+  }
+  .switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-primary);
+    transition: .3s;
+    border-radius: 50%;
+  }
+  .switch input:checked + .slider:before {
+    transform: translateX(14px);
+    background-color: #060913;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">
+      <!-- Printer SVG Icon -->
+      <svg viewBox="0 0 24 24">
+        <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+      </svg>
+    </div>
+    <div>
+      Canon Print Monitor
+      <br><span>imageRUNNER ADVANCE C3922i</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-lang-uz" onclick="changeLanguage('uz')">UZ</button>
+      <button class="lang-btn" id="btn-lang-ru" onclick="changeLanguage('ru')">RU</button>
+    </div>
+    <div class="csv-toggle-container" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:4px 8px;">
+      <span style="font-size:11px;font-weight:600;color:var(--text-secondary);" id="csv-toggle-label">Faol sinxronlash (CSV)</span>
+      <label class="switch" style="position:relative;display:inline-block;width:34px;height:20px;">
+        <input type="checkbox" id="csv-toggle-input" onchange="toggleCSVSync(this.checked)" checked style="opacity:0;width:0;height:0;">
+        <span class="slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:rgba(255,255,255,0.1);transition:.3s;border-radius:20px;"></span>
+      </label>
+    </div>
+    <div class="pulse-container">
+      <div class="status-dot"></div>
+      <span>Syslog receiver faol</span>
+    </div>
+    <span style="font-size:12px;color:var(--text-muted)" id="last-update">—</span>
+    <button class="btn btn-primary" onclick="collectAll()" id="collect-btn">
+      <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+      Loglarni yuklab olish
+    </button>
+    <div class="dropdown">
+      <button class="btn btn-primary" onclick="toggleDropdown(event)" style="box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);">
+        <svg viewBox="0 0 24 24"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/></svg>
+        📊 Hisobotlarni yuklash
+      </button>
+      <div class="dropdown-content" id="reportDropdown">
+        <a href="/api/export-excel?period=daily">Bugungi hisobot (Daily)</a>
+        <a href="/api/export-excel?period=weekly">Haftalik hisobot (Weekly)</a>
+        <a href="/api/export-excel?period=monthly" style="color:var(--accent);font-weight:600">📊 Oylik KPI Hisobot (Monthly)</a>
+        <a href="/api/export-excel?period=all">Jami hisobot (All-time)</a>
+        <a href="#" onclick="openKpiModal(event)" style="color:var(--accent)">🗓️ Boshqa oy uchun KPI (Shablon)</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('dashboard')">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      Dashboard
+    </button>
+    <button class="tab-btn" onclick="switchTab('logs')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+      Loglar
+    </button>
+    <button class="tab-btn" onclick="switchTab('printers')">
+      <svg viewBox="0 0 24 24"><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 14H8v-4h8v4zm4-5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+      Printerlar
+    </button>
+    <button class="tab-btn" onclick="switchTab('upload')">
+      <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+      CSV yuklash
+    </button>
+    <button class="tab-btn" onclick="switchTab('syslog')" id="tab-btn-syslog">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+      Syslog
+    </button>
+  </div>
+
+  <!-- TAB: DASHBOARD -->
+  <div class="tab-panel active" id="tab-dashboard">
+
+    <!-- PERIOD FILTER -->
+    <div class="period-filter-bar">
+      <span class="period-filter-label">Ko'rsatish davri:</span>
+      <div class="period-pills">
+        <button class="period-pill" id="pill-today" onclick="setPeriod('today')">📅 Bugun</button>
+        <button class="period-pill" id="pill-weekly" onclick="setPeriod('weekly')">📆 Hafta</button>
+        <button class="period-pill" id="pill-monthly" onclick="setPeriod('monthly')">🗓️ 30 kun</button>
+        <button class="period-pill active" id="pill-all" onclick="setPeriod('all')">🗃️ Barchasi</button>
+      </div>
+      <span class="period-filter-info" id="period-info-label">Ma'lumotlar bazasidagi barcha yozuvlar</span>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-accent">
+        <div class="kpi-header-flex">
+          <div class="kpi-label">Jami varaqlar</div>
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-sheets">—</div>
+        <div class="kpi-sub">Barcha muvaffaqiyatli chop etilganlar</div>
+      </div>
+      
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-header-flex">
+          <div class="kpi-label">Print ishlari</div>
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M22 5.18L10.59 16.6l-4.24-4.24 1.41-1.41 2.83 2.83L19.18 4l2.82 1.18zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-jobs">—</div>
+        <div class="kpi-sub">Umumiy tizim loglari soni</div>
+      </div>
+
+      <div class="kpi-card kpi-purple">
+        <div class="kpi-header-flex">
+          <div class="kpi-label">O'rtacha varaq</div>
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-avg">—</div>
+        <div class="kpi-sub">Bir chop etishdagi o'rtacha varaq</div>
+      </div>
+
+      <div class="kpi-card kpi-warning">
+        <div class="kpi-header-flex">
+          <div class="kpi-label">Syslog xabarlari</div>
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-syslogs">—</div>
+        <div class="kpi-sub">Qabul qilingan xom paketlar</div>
+      </div>
+
+      <div class="kpi-card kpi-danger">
+        <div class="kpi-header-flex">
+          <div class="kpi-label">Xatoliklar</div>
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpi-failed">—</div>
+        <div class="kpi-sub">Bekor qilingan / Xato chop etishlar</div>
+      </div>
+    </div>
+
+    <!-- CHARTS GRID -->
+    <div class="charts-grid">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 15.08l1.5 1.41z"/></svg>
+            Kunlik chop etish hajmi (Oxirgi 30 kun)
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="chart-container-large">
+            <canvas id="chartDaily"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
+            Printers Share
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="chart-donut-wrap">
+            <div class="chart-center-text">
+              <div class="chart-center-val" id="donut-total">0</div>
+              <div class="chart-center-lbl">Jami varaq</div>
+            </div>
+            <canvas id="chartPrinter"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN SPLIT -->
+    <div class="split-grid">
+      <!-- TOP USERS -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            Foydalanuvchilar reytingi (Top 20)
+          </div>
+        </div>
+        <div class="section-body" style="padding:0">
+          <table class="user-table" id="users-table">
+            <thead>
+              <tr>
+                <th style="width: 50px">#</th>
+                <th>Foydalanuvchi</th>
+                <th>Varaqlar</th>
+                <th>Ishlar soni</th>
+                <th style="width: 150px">Ulush</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted)">Statistika yuklanmoqda...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HOURLY ACTIVITY -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+            Soatbay Chop Etish Faolligi (Pik soatlarini aniqlash)
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="chart-container-large">
+            <canvas id="chartHourly"></canvas>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /split-grid -->
+
+  </div> <!-- /tab-dashboard -->
+
+  <!-- TAB: LOGS -->
+  <div class="tab-panel" id="tab-logs">
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          Tizimdagi Print Loglari
+        </div>
+        <div class="filter-bar">
+          <div class="filter-input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="filter-search" placeholder="Foydalanuvchi yoki Fayl..." oninput="triggerLogsFilter()">
+          </div>
+          <select id="filter-printer" onchange="triggerLogsFilter()">
+            <option value="">Barcha printerlar</option>
+            <option value="172.16.0.7">172.16.0.7</option>
+            <option value="172.16.0.8">172.16.0.8</option>
+            <option value="172.16.0.9">172.16.0.9</option>
+            <option value="172.16.0.24">172.16.0.24</option>
+            <option value="172.18.0.120">172.18.0.120</option>
+          </select>
+          <select id="filter-source" onchange="triggerLogsFilter()">
+            <option value="">Barcha manbalar</option>
+            <option value="syslog">Syslog</option>
+            <option value="csv">CSV Fayl</option>
+          </select>
+          <button class="btn" onclick="loadLogs()">
+            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            Yangilash
+          </button>
+          <button class="btn btn-danger" onclick="clearAllLogsConfirm()">
+            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            Loglarni tozalash
+          </button>
+        </div>
+      </div>
+      <div class="section-body" style="padding:0">
+        <div class="log-table-wrap">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th onclick="sortTable(0)">No <span id="sort-icon-0"></span></th>
+                <th onclick="sortTable(1)">Sana / Vaqt <span id="sort-icon-1"></span></th>
+                <th onclick="sortTable(2)">Printer <span id="sort-icon-2"></span></th>
+                <th onclick="sortTable(3)">Foydalanuvchi <span id="sort-icon-3"></span></th>
+                <th onclick="sortTable(4)">Fayl Nomi <span id="sort-icon-4"></span></th>
+                <th onclick="sortTable(5)">Varaqlar <span id="sort-icon-5"></span></th>
+                <th onclick="sortTable(6)">Nusxalar <span id="sort-icon-6"></span></th>
+                <th onclick="sortTable(7)">Natija <span id="sort-icon-7"></span></th>
+                <th onclick="sortTable(8)">Manba <span id="sort-icon-8"></span></th>
+              </tr>
+            </thead>
+            <tbody id="logs-tbody">
+              <tr><td colspan="9" class="empty-state"><div class="empty-state-icon">📋</div><div>Loglar topilmadi</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: PRINTERS -->
+  <div class="tab-panel" id="tab-printers">
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24"><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 14H8v-4h8v4zm4-5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+          Ulangan Canon Printerlari
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn" onclick="openPrinterForm()" id="add-printer-btn">
+            ➕ Yangi printer
+          </button>
+          <button class="btn btn-primary" onclick="collectAll()" id="sync-all-btn">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+            Hammasini Sinxronlash
+          </button>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="printer-grid" id="printer-grid">
+          <!-- JS dynamic print cards -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TONER STATUS -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+          Printer Siyohlari (Toner)
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="printer-grid" id="toner-grid">
+           <div style="color:var(--text-muted);text-align:center;width:100%">Toner ma'lumotlari yuklanmoqda...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          Sinxronlash va Sozlash Ko'rsatmalari
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="responsive-grid">
+          <div>
+            <h4 style="font-family:var(--font-header);margin-bottom:12px;color:var(--accent);font-size:14px">1. CSV orqali qo'lda yuklash</h4>
+            <p style="color:var(--text-secondary);font-size:13px;line-height:1.7">
+              Agar avtomatik syslog ulanmagan bo'lsa:<br>
+              • Brauzerda printer interfeysiga kiring: <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-family:var(--font-mono)">http://&lt;PRINTER_IP&gt;:8000</code><br>
+              • <b>Status Monitor/Cancel</b> sahifasiga o'ting.<br>
+              • Chap paneldan <b>Copy/Print → Job Log</b> bo'limiga kiring.<br>
+              • Sahifaning yuqori qismidagi <b>"Store in CSV Format..."</b> tugmasini bosing va faylni kompyuterga saqlang.<br>
+              • Faylni ushbu dashboardning <b>"CSV yuklash"</b> bo'limiga joylashtiring.
+            </p>
+          </div>
+          <div>
+            <h4 style="font-family:var(--font-header);margin-bottom:12px;color:var(--blue);font-size:14px">2. Syslog orqali real-vaqtda sinxronlash (Tavsiya etiladi)</h4>
+            <p style="color:var(--text-secondary);font-size:13px;line-height:1.7">
+              Har bir chop etish avtomatik ravishda ushbu kompyuterga yuborilishi uchun:<br>
+              • Printer sozlamalarida <b>Syslog Settings</b> bo'limiga kiring (Remote UI → Export/Clear Audit Log → Syslog Settings).<br>
+              • <b>"Use Syslog Send"</b> yoqing.<br>
+              • Server manzili sifatida ushbu kompyuter IP manzilini, portni esa <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-family:var(--font-mono)">5140</code> kiriting.<br>
+              • Ulanish turini <b>UDP</b> holatida qoldiring va saqlang.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- TAB: UPLOAD CSV -->
+  <div class="tab-panel" id="tab-upload">
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          CSV Log Faylini Tizimga Yuklash
+        </div>
+      </div>
+      <div class="section-body">
+        <div style="margin-bottom:20px; max-width: 320px;">
+          <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:8px;font-weight:500">Qaysi printerga tegishli:</label>
+          <select id="upload-printer-select" style="width:100%">
+            <option value="1">Canon C3922i #1 — 172.16.0.7</option>
+            <option value="2">Canon C3922i #2 — 172.16.0.8</option>
+            <option value="3">Canon C3922i #3 — 172.16.0.9</option>
+            <option value="4">Canon C3922i #4 — 172.16.0.24</option>
+            <option value="5">Canon C3922i #5 — 172.18.0.120</option>
+          </select>
+        </div>
+
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('csv-input').click()"
+             ondragover="event.preventDefault();this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="handleDrop(event)">
+          <input type="file" id="csv-input" accept=".csv" onchange="uploadCSV(this.files[0])">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+          </div>
+          <div class="upload-text">CSV faylni sudrab bu yerga tashlang yoki bosing</div>
+          <div class="upload-sub">Printer Remote UI → Copy/Print → Job Log orqali yuklangan CSV format</div>
+        </div>
+
+        <div id="upload-result" style="margin-top:20px;display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: SYSLOG -->
+  <div class="tab-panel" id="tab-syslog">
+    <div class="section" style="margin-bottom:24px">
+      <div class="section-head">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+          Syslog Parametrlari va IP Sozlash
+        </div>
+        <span id="syslog-port-badge" style="font-family:var(--font-mono);font-size:12px;color:var(--accent);background:var(--accent-glow);padding:4px 12px;border-radius:6px;font-weight:600">UDP: 5140</span>
+      </div>
+      <div class="section-body">
+        <div class="responsive-grid">
+          <div>
+            <h4 style="font-family:var(--font-header);margin-bottom:12px;color:var(--accent)">Printer sozlash ketma-ketligi:</h4>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <span style="min-width:24px;height:24px;background:var(--accent);color:#060913;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px">1</span>
+                <div>
+                  <p style="font-size:13px;color:var(--text-primary);font-weight:600">Remote UI sahifasiga kiring</p>
+                  <code style="font-size:11px;color:var(--accent);background:rgba(0,240,194,0.06);padding:2px 8px;border-radius:4px;font-family:var(--font-mono)">http://172.16.0.7:8000</code>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <span style="min-width:24px;height:24px;background:var(--accent);color:#060913;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px">2</span>
+                <p style="font-size:13px;color:var(--text-primary);font-weight:600;padding-top:2px"><b>Settings/Registration → Device Management → Export/Clear Audit Log → Syslog Settings</b></p>
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <span style="min-width:24px;height:24px;background:var(--accent);color:#060913;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px">3</span>
+                <div style="font-size:13px;color:var(--text-primary);line-height:1.8">
+                  <b>"Use Syslog Send"</b> ni belgilang.<br>
+                  • Server IP: <span id="my-ip-hint" style="font-family:var(--font-mono);color:var(--accent);font-weight:600">Ushbu PC manzili</span><br>
+                  • Port raqami: <code style="font-family:var(--font-mono);color:var(--accent)">5140</code> | Ulanish turi: <code style="font-family:var(--font-mono);color:var(--accent)">UDP</code>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 style="font-family:var(--font-header);margin-bottom:12px;color:var(--blue)">Syslog Qabul Qiluvchi Statusi</h4>
+            <div style="background:rgba(255, 255, 255, 0.02);border:1px solid var(--border);border-radius:12px;padding:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <span style="font-size:13px;color:var(--text-secondary)">UDP Server</span>
+                <span style="font-size:11px;background:rgba(16, 185, 129, 0.12);color:var(--success);padding:3px 10px;border-radius:20px;font-weight:600;display:flex;align-items:center;gap:6px"><span class="status-dot"></span>FAOL</span>
+              </div>
+              <div style="font-family:var(--font-mono);font-size:14px;color:var(--text-primary);margin-bottom:12px">
+                Manzil: <span style="color:var(--accent)">0.0.0.0:5140</span> (Barcha interfeyslar)
+              </div>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:12px">
+                <span style="font-size:12px;color:var(--text-muted)">Jami qabul qilingan paketlar:</span>
+                <span style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--accent)" id="syslog-total-count">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMINAL VIEW -->
+    <div class="terminal-wrap">
+      <div class="terminal-header">
+        <div class="terminal-controls">
+          <div class="terminal-dot term-close"></div>
+          <div class="terminal-dot term-min"></div>
+          <div class="terminal-dot term-max"></div>
+        </div>
+        <div class="terminal-title">live-syslog-feed.log</div>
+        <div style="width: 32px"></div>
+      </div>
+      <div class="terminal-body" id="syslog-feed-tbody">
+        <div class="term-line" style="color:var(--text-muted)">[Tizim] Syslog xabarlari kutilmoqda. Printerlardan print ishlari boshlanganda bu yerda xabarlar paydo bo'ladi...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <div class="toast-title" id="toast-title">Sarlavha</div>
+  <div class="toast-msg" id="toast-msg">Xabar matni shu yerda bo'ladi</div>
+</div>
+
+<!-- PRINTER CRUD MODAL -->
+<div class="modal-overlay" id="printer-modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Yangi printer qo'shish</div>
+      <button class="modal-close" onclick="closePrinterForm()">&times;</button>
+    </div>
+    <form id="printer-form" onsubmit="savePrinter(event)">
+      <input type="hidden" id="form-printer-id" value="">
+      <div class="form-group">
+        <label id="lbl-modal-name" for="form-printer-name">Printer nomi</label>
+        <input type="text" id="form-printer-name" required placeholder="Masalan: Canon C3922i #6">
+      </div>
+      <div class="form-group">
+        <label id="lbl-modal-ip" for="form-printer-ip">IP manzili</label>
+        <input type="text" id="form-printer-ip" required placeholder="Masalan: 172.16.0.25">
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px;">
+        <button type="button" class="btn" onclick="closePrinterForm()" id="btn-modal-cancel">Bekor qilish</button>
+        <button type="submit" class="btn btn-primary" id="btn-modal-save">Saqlash</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+let PRINTERS = [];
+
+// ─── PRINTER CRUD OPERATIONS ───
+async function loadPrinters() {
+  try {
+    const r = await fetch('/api/printers');
+    PRINTERS = await r.json();
+    updatePrinterSelects();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function updatePrinterSelects() {
+  const t = T[currentLang];
+  
+  // 1. Logs Filter dropdown
+  const filterPrinter = document.getElementById('filter-printer');
+  if (filterPrinter) {
+    const currentValue = filterPrinter.value;
+    filterPrinter.innerHTML = `<option value="">${t.logs_all_printers}</option>` + 
+      PRINTERS.map(p => `<option value="${p.ip}">${p.ip}</option>`).join('');
+    filterPrinter.value = currentValue;
+  }
+  
+  // 2. Upload tab select
+  const uploadSelect = document.getElementById('upload-printer-select');
+  if (uploadSelect) {
+    const currentValue = uploadSelect.value;
+    uploadSelect.innerHTML = PRINTERS.map(p => `<option value="${p.id}">${p.name} — ${p.ip}</option>`).join('');
+    uploadSelect.value = currentValue;
+  }
+}
+
+function openPrinterForm(id = null, name = "", ip = "") {
+  const t = T[currentLang];
+  document.getElementById('form-printer-id').value = id || "";
+  document.getElementById('form-printer-name').value = name;
+  document.getElementById('form-printer-ip').value = ip;
+  
+  document.getElementById('modal-title').innerText = id ? t.printers_modal_edit_title : t.printers_modal_add_title;
+  
+  document.getElementById('printer-modal').classList.add('show');
+}
+
+function closePrinterForm() {
+  document.getElementById('printer-modal').classList.remove('show');
+  document.getElementById('printer-form').reset();
+  document.getElementById('form-printer-id').value = "";
+}
+
+async function savePrinter(e) {
+  e.preventDefault();
+  const id = document.getElementById('form-printer-id').value;
+  const name = document.getElementById('form-printer-name').value.trim();
+  const ip = document.getElementById('form-printer-ip').value.trim();
+  
+  const t = T[currentLang];
+  const url = id ? `/api/printers/${id}` : '/api/printers';
+  const method = id ? 'PUT' : 'POST';
+  
+  try {
+    const r = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, ip })
+    });
+    const d = await r.json();
+    if (d.status === 'ok') {
+      showToast(t.js_toast_printer_saved, d.message);
+      closePrinterForm();
+      await loadPrinters();
+      
+      // Refresh grids and stats
+      if (document.getElementById('tab-printers').classList.contains('active')) {
+        renderPrinterGrid();
+      } else {
+        loadStats();
+      }
+    } else {
+      showToast(t.js_toast_error, d.message, true);
+    }
+  } catch (err) {
+    showToast(t.js_toast_error, err.message, true);
+  }
+}
+
+async function deletePrinter(id, name) {
+  const t = T[currentLang];
+  const confirmMsg = t.printers_delete_confirm.replace('{name}', name);
+  if (confirm(confirmMsg)) {
+    try {
+      const r = await fetch(`/api/printers/${id}`, { method: 'DELETE' });
+      const d = await r.json();
+      if (d.status === 'ok') {
+        showToast(t.js_toast_printer_deleted, d.message);
+        await loadPrinters();
+        
+        if (document.getElementById('tab-printers').classList.contains('active')) {
+          renderPrinterGrid();
+        } else {
+          loadStats();
+        }
+      } else {
+        showToast(t.js_toast_error, d.message, true);
+      }
+    } catch (err) {
+      showToast(t.js_toast_error, err.message, true);
+    }
+  }
+}
+
+function toggleCSVSync(isEnabled) {
+  localStorage.setItem('csv_sync_enabled', isEnabled ? 'true' : 'false');
+  applyCSVSyncState(isEnabled);
+}
+
+function applyCSVSyncState(isEnabled) {
+  // 1. Hide/show the CSV upload tab button in tab bar
+  const uploadTabBtn = document.querySelector('button[onclick="switchTab(\'upload\')"]');
+  if (uploadTabBtn) {
+    uploadTabBtn.style.display = isEnabled ? 'flex' : 'none';
+  }
+  
+  // 2. Hide/show the "Loglarni yuklab olish" (HTTP pull) button in header
+  const collectBtn = document.getElementById('collect-btn');
+  if (collectBtn) {
+    collectBtn.style.display = isEnabled ? 'inline-flex' : 'none';
+  }
+  
+  // 3. Hide/show the "Hammasini Sinxronlash" button in printers tab
+  const syncAllBtn = document.getElementById('sync-all-btn');
+  if (syncAllBtn) {
+    syncAllBtn.style.display = isEnabled ? 'inline-flex' : 'none';
+  }
+  
+  // 4. Hide/show the "Sinxronlash" (collectOne) buttons in printer grid cards
+  document.querySelectorAll('.printer-collect-btn').forEach(btn => {
+    btn.style.display = isEnabled ? 'inline-block' : 'none';
+  });
+  
+  // 5. Hide/show manual CSV sync instruction in printers tab
+  const instr1 = document.querySelector('#tab-printers .section-body > div.responsive-grid > div:first-child');
+  if (instr1) {
+    instr1.style.display = isEnabled ? 'block' : 'none';
+  }
+  
+  // If the user was currently on the upload CSV tab and it got disabled, switch them back to Dashboard!
+  if (!isEnabled && document.getElementById('tab-upload').classList.contains('active')) {
+    switchTab('dashboard');
+  }
+}
+
+let chartDaily, chartPrinter, chartHourly;
+let printerStatuses = {};
+let currentLogs = [];
+let sortDirection = {};
+let currentSortColumn = -1;
+
+let currentLang = 'uz';
+
+const T = {
+  uz: {
+    syslog_active: "Syslog receiver faol",
+    collect_btn: "Loglarni yuklab olish",
+    reports_btn: "📊 Hisobotlarni yuklash",
+    report_daily: "Bugungi hisobot (Daily)",
+    report_weekly: "Haftalik hisobot (Weekly)",
+    report_monthly: "Oylik hisobot (Monthly)",
+    report_all: "Jami hisobot (All-time)",
+    tab_dashboard: "Dashboard",
+    tab_logs: "Loglar",
+    tab_printers: "Printerlar",
+    tab_upload: "CSV yuklash",
+    tab_syslog: "Syslog",
+    kpi_sheets: "Jami varaqlar",
+    kpi_sheets_sub: "Barcha muvaffaqiyatli chop etilganlar",
+    kpi_jobs: "Print ishlari",
+    kpi_jobs_sub: "Umumiy tizim loglari soni",
+    kpi_avg: "O'rtacha varaq",
+    kpi_avg_sub: "Bir chop etishdagi o'rtacha varaq",
+    kpi_syslogs: "Syslog xabarlari",
+    kpi_syslogs_sub: "Qabul qilingan xom paketlar",
+    kpi_failed: "Xatoliklar",
+    kpi_failed_sub: "Bekor qilingan / Xato chop etishlar",
+    chart_daily_title: "Kunlik chop etish hajmi (Oxirgi 30 kun)",
+    chart_printer_title: "Printers Share",
+    chart_printer_center: "Jami varaq",
+    chart_hourly_title: "Soatbay Chop Etish Faolligi (Pik soatlarini aniqlash)",
+    ranking_title: "Foydalanuvchilar reytingi (Top 20)",
+    ranking_user: "Foydalanuvchi",
+    ranking_sheets: "Varaqlar",
+    ranking_jobs: "Ishlar soni",
+    ranking_share: "Ulush",
+    ranking_loading: "Statistika yuklanmoqda...",
+    ranking_empty: "Hech qanday chop etish ma'lumoti topilmadi. Loglarni sinxronlang.",
+    ranking_jobs_count: "ta ish",
+    ranking_activity: "faollik",
+    logs_title: "Tizimdagi Print Loglari",
+    logs_search_placeholder: "Foydalanuvchi yoki Fayl...",
+    logs_all_printers: "Barcha printerlar",
+    logs_all_sources: "Barcha manbalar",
+    logs_update_btn: "Yangilash",
+    logs_clear_btn: "Loglarni tozalash",
+    logs_empty: "Loglar topilmadi",
+    logs_col_no: "No",
+    logs_col_time: "Sana / Vaqt",
+    logs_col_printer: "Printer",
+    logs_col_user: "Foydalanuvchi",
+    logs_col_file: "Fayl Nomi",
+    logs_col_sheets: "Varaqlar",
+    logs_col_copies: "Nusxalar",
+    logs_col_result: "Natija",
+    logs_col_source: "Manba",
+    printers_title: "Ulangan Canon Printerlari",
+    printers_sync_all: "Hammasini Sinxronlash",
+    printers_sync_btn: "Sinxronlash",
+    printers_status_ready: "Tayyor",
+    printers_status_loading: "Yuklanmoqda",
+    printers_status_offline: "Offline",
+    printers_status_error: "Xatolik",
+    printers_instr_title: "Sinxronlash va Sozlash Ko'rsatmalari",
+    printers_instr1_title: "1. CSV orqali qo'lda yuklash",
+    printers_instr1_text: "Agar avtomatik syslog ulanmagan bo'lsa:<br>• Brauzerda printer interfeysiga kiring: <code style=\"background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-family:var(--font-mono)\">http://&lt;PRINTER_IP&gt;:8000</code><br>• <b>Status Monitor/Cancel</b> sahifasiga o'ting.<br>• Chap paneldan <b>Copy/Print → Job Log</b> bo'limiga kiring.<br>• Sahifaning yuqori qismidagi <b>\"Store in CSV Format...\"</b> tugmasini bosing va faylni kompyuterga saqlang.<br>• Faylni ushbu dashboardning <b>\"CSV yuklash\"</b> bo'limiga joylashtiring.",
+    printers_instr2_title: "2. Syslog orqali real-vaqtda sinxronlash (Tavsiya etiladi)",
+    printers_instr2_text: "Har bir chop etish avtomatik ravishda ushbu kompyuterga yuborilishi uchun:<br>• Printer sozlamalarida <b>Syslog Settings</b> bo'limiga kiring (Remote UI → Export/Clear Audit Log → Syslog Settings).<br>• <b>\"Use Syslog Send\"</b> yoqing.<br>• Server manzili sifatida ushbu kompyuter IP manzilini, portni esa <code style=\"background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-family:var(--font-mono)\">5140</code> kiriting.<br>• Ulanish turini <b>UDP</b> holatida qoldiring va saqlang.",
+    upload_title: "CSV Log Faylini Tizimga Yuklash",
+    upload_printer_label: "Qaysi printerga tegishli:",
+    upload_zone_text: "CSV faylni sudrab bu yerga tashlang yoki bosing",
+    upload_zone_sub: "Printer Remote UI → Copy/Print → Job Log orqali yuklangan CSV format",
+    syslog_instr_title: "Syslog Parametrlari va IP Sozlash",
+    syslog_steps_title: "Printer sozlash ketma-ketligi:",
+    syslog_step1: "Remote UI sahifasiga kiring",
+    syslog_step2: "<b>Settings/Registration → Device Management → Export/Clear Audit Log → Syslog Settings</b>",
+    syslog_step3: "<b>\"Use Syslog Send\"</b> ni belgilang.<br>• Server IP: <span id=\"my-ip-hint\" style=\"font-family:var(--font-mono);color:var(--accent);font-weight:600\">Ushbu PC manzili</span><br>• Port raqami: <code style=\"font-family:var(--font-mono);color:var(--accent)\">5140</code> | Ulanish turi: <code style=\"font-family:var(--font-mono);color:var(--accent)\">UDP</code>",
+    syslog_status_title: "Syslog Qabul Qiluvchi Statusi",
+    syslog_status_label: "UDP Server",
+    syslog_status_active: "FAOL",
+    syslog_status_addr: "Manzil: 0.0.0.0:5140 (Barcha interfeyslar)",
+    syslog_status_total: "Jami qabul qilingan paketlar:",
+    syslog_waiting: "[Tizim] Syslog xabarlari kutilmoqda. Printerlardan print ishlari boshlanganda bu yerda xabarlar paydo bo'ladi...",
+    
+    js_last_update: "Yangilandi: ",
+    js_syncing: "<span class=\"spin\"></span> Sinxronlash...",
+    js_sync_toast_ok: "{ok} ta printer muvaffaqiyatli. Yangi: {saved} ta log. {err} ta ulanmadi.",
+    js_toast_sync_error: "❌ Ulanish xatosi",
+    js_toast_sync_success: "✅ Sinxronlash tugadi",
+    js_toast_error: "❌ Xatolik",
+    js_toast_success_one: "{found} ta log topildi, {saved} ta yangi saqlandi",
+    js_clear_confirm: "Diqqat! Barcha loglar dashboard ekranidan tozalanadi (yashiriladi), ammo yuklab olinadigan Excel hisobotlarida to'liq saqlanib qoladi. Ushbu amalni tasdiqlaysizmi?",
+    js_toast_cleared: "🗑️ Tozalandi",
+    js_toast_cleared_msg: "Dashboard loglari muvaffaqiyatli yashirildi.",
+    js_upload_no_file: "Fayl tanlanmagan!",
+    js_uploading: "Yuklanmoqda...",
+    js_upload_success: "Muvaffaqiyatli yuklandi!",
+    js_chart_sheets_label: "Varaqlar soni",
+    js_chart_jobs_label: "Ishlar soni",
+    printers_add_btn: "➕ Yangi printer",
+    printers_modal_add_title: "Yangi printer qo'shish",
+    printers_modal_edit_title: "Printerni tahrirlash",
+    printers_modal_name: "Printer nomi",
+    printers_modal_ip: "IP manzili",
+    printers_modal_save: "Saqlash",
+    printers_modal_cancel: "Bekor qilish",
+    printers_delete_confirm: "Diqqat! '{name}' printerni o'chirmoqchimisiz?",
+    js_toast_printer_saved: "✅ Saqlandi",
+    js_toast_printer_deleted: "🗑️ O'chirildi",
+    csv_toggle_label: "Faol sinxronlash (CSV)",
+    demo_label: "Taqdimot rejimi:",
+    demo_desc: "Taqdimot maqsadlari uchun xodimlar ism-shariflari bilan mos bo'lgan normativ print statistikasini yuklash yoki o'chirish.",
+    btn_seed_demo: "✨ Demo yuklash",
+    btn_clear_demo: "🗑️ Demoni o'chirish",
+    js_toast_demo_seeded: "Demo statistika yuklandi!",
+    js_toast_demo_cleared: "Demo statistika o'chirildi!",
+    js_demo_loading: "Yuklanmoqda...",
+  },
+  ru: {
+    syslog_active: "Syslog ресивер активен",
+    collect_btn: "Синхронизировать логи",
+    reports_btn: "📊 Скачать отчеты",
+    report_daily: "Отчет за сегодня (Daily)",
+    report_weekly: "Отчет за неделю (Weekly)",
+    report_monthly: "Отчет за месяц (Monthly)",
+    report_all: "Полный отчет (All-time)",
+    tab_dashboard: "Панель управления",
+    tab_logs: "Логи",
+    tab_printers: "Принтеры",
+    tab_upload: "Загрузка CSV",
+    tab_syslog: "Syslog",
+    kpi_sheets: "Всего листов",
+    kpi_sheets_sub: "Все успешно распечатанные страницы",
+    kpi_jobs: "Задания на печать",
+    kpi_jobs_sub: "Общее число логов в системе",
+    kpi_avg: "Средний лист",
+    kpi_avg_sub: "Среднее число страниц за печать",
+    kpi_syslogs: "Сообщения Syslog",
+    kpi_syslogs_sub: "Получено сырых пакетов",
+    kpi_failed: "Ошибки",
+    kpi_failed_sub: "Отмененные / Ошибочные печати",
+    chart_daily_title: "Ежедневный объем печати (Последние 30 дней)",
+    chart_printer_title: "Доли принтеров",
+    chart_printer_center: "Всего листов",
+    chart_hourly_title: "Почасовая активность печати (Определение пиковых часов)",
+    ranking_title: "Рейтинг пользователей (Top 20)",
+    ranking_user: "Пользователь",
+    ranking_sheets: "Листы",
+    ranking_jobs: "Задания",
+    ranking_share: "Доля",
+    ranking_loading: "Загрузка статистики...",
+    ranking_empty: "Информация о печати не найдена. Синхронизируйте логи.",
+    ranking_jobs_count: "зад.",
+    ranking_activity: "активности",
+    logs_title: "Логи печати в системе",
+    logs_search_placeholder: "Пользователь или файл...",
+    logs_all_printers: "Все принтеры",
+    logs_all_sources: "Все источники",
+    logs_update_btn: "Обновить",
+    logs_clear_btn: "Очистить логи",
+    logs_empty: "Логи не найдены",
+    logs_col_no: "№",
+    logs_col_time: "Дата / Время",
+    logs_col_printer: "Принтер",
+    logs_col_user: "Пользователь",
+    logs_col_file: "Имя файла",
+    logs_col_sheets: "Листы",
+    logs_col_copies: "Копии",
+    logs_col_result: "Результат",
+    logs_col_source: "Источник",
+    printers_title: "Подключенные принтеры Canon",
+    printers_sync_all: "Синхронизировать все",
+    printers_sync_btn: "Синхронизировать",
+    printers_status_ready: "Готов",
+    printers_status_loading: "Загрузка...",
+    printers_status_offline: "Оффлайн",
+    printers_status_error: "Ошибка",
+    printers_instr_title: "Инструкции по настройке и синхронизации",
+    printers_instr1_title: "1. Ручная загрузка через CSV",
+    printers_instr1_text: "Если автоматический syslog не настроен:<br>• Войдите в веб-интерфейс принтера: <code style=\"background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-family:var(--font-mono)\">http://&lt;PRINTER_IP&gt;:8000</code><br>• Перейдите в <b>Status Monitor/Cancel</b>.<br>• В левой панели выберите <b>Copy/Print → Job Log</b>.<br>• Нажмите кнопку <b>\"Store in CSV Format...\"</b> вверху страницы и сохраните файл на компьютер.<br>• Загрузите файл в разделе <b>\"Загрузка CSV\"</b> на этой панели.",
+    printers_instr2_title: "2. Синхронизация в реальном времени через Syslog (Рекомендуется)",
+    printers_instr2_text: "Чтобы каждая печать автоматически отправлялась на этот компьютер:<br>• В настройках принтера перейдите в <b>Syslog Settings</b> (Remote UI → Export/Clear Audit Log → Syslog Settings).<br>• Включите <b>\"Use Syslog Send\"</b>.<br>• В качестве адреса сервера введите IP-адрес этого компьютера, порт <code style=\"background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-family:var(--font-mono)\">5140</code>.<br>• Оставьте тип подключения <b>UDP</b> и сохраните.",
+    upload_title: "Загрузка файла логов CSV в систему",
+    upload_printer_label: "К какому принтеру относится:",
+    upload_zone_text: "Перетащите файл CSV сюда или нажмите для выбора",
+    upload_zone_sub: "Формат CSV, выгруженный через Printer Remote UI → Copy/Print → Job Log",
+    syslog_instr_title: "Параметры Syslog и настройка IP",
+    syslog_steps_title: "Последовательность настройки принтера:",
+    syslog_step1: "Войдите на страницу Remote UI",
+    syslog_step2: "<b>Settings/Registration → Device Management → Export/Clear Audit Log → Syslog Settings</b>",
+    syslog_step3: "Выберите <b>\"Use Syslog Send\"</b>.<br>• Server IP: <span style=\"font-family:var(--font-mono);color:var(--accent);font-weight:600\">Адрес этого ПК</span><br>• Номер порта: <code style=\"font-family:var(--font-mono);color:var(--accent)\">5140</code> | Тип подключения: <code style=\"font-family:var(--font-mono);color:var(--accent)\">UDP</code>",
+    syslog_status_title: "Статус приемника Syslog",
+    syslog_status_label: "UDP Сервер",
+    syslog_status_active: "АКТИВЕН",
+    syslog_status_addr: "Адрес: 0.0.0.0:5140 (Все интерфейсы)",
+    syslog_status_total: "Всего полученных пакетов:",
+    syslog_waiting: "[Система] Ожидание сообщений Syslog. Сообщения появятся здесь, когда начнется печать с принтеров...",
+    
+    js_last_update: "Обновлено: ",
+    js_syncing: "<span class=\"spin\"></span> Синхронизация...",
+    js_sync_toast_ok: "успешно с {ok} принтерами. Новых логов: {saved}. {err} не подключены.",
+    js_toast_sync_error: "❌ Ошибка подключения",
+    js_toast_sync_success: "✅ Синхронизация завершена",
+    js_toast_error: "❌ Ошибка",
+    js_toast_success_one: "Найдено {found} логов, {saved} новых успешно сохранено",
+    js_clear_confirm: "Внимание! Все логи будут очищены (скрыты) с экрана панели управления, но полностью сохранятся в выгружаемых отчетах Excel. Вы подтверждаете это действие?",
+    js_toast_cleared: "🗑️ Очищено",
+    js_toast_cleared_msg: "Логи панели управления успешно скрыты.",
+    js_upload_no_file: "Файл не выбран!",
+    js_uploading: "Загрузка...",
+    js_upload_success: "Успешно загружено!",
+    js_chart_sheets_label: "Количество листов",
+    js_chart_jobs_label: "Количество заданий",
+    printers_add_btn: "➕ Добавить принтер",
+    printers_modal_add_title: "Добавить новый принтер",
+    printers_modal_edit_title: "Редактировать принтер",
+    printers_modal_name: "Имя принтера",
+    printers_modal_ip: "IP-адрес",
+    printers_modal_save: "Сохранить",
+    printers_modal_cancel: "Отмена",
+    printers_delete_confirm: "Внимание! Вы действительно хотите удалить принтер '{name}'?",
+    js_toast_printer_saved: "✅ Сохранено",
+    js_toast_printer_deleted: "🗑️ Удалено",
+    csv_toggle_label: "Активный синк (CSV)",
+    demo_label: "Режим презентации:",
+    demo_desc: "Загрузка или удаление нормативной статистики печати, соответствующей именам сотрудников, для презентационных целей.",
+    btn_seed_demo: "✨ Загрузить демо",
+    btn_clear_demo: "🗑️ Удалить демо",
+    js_toast_demo_seeded: "Демо-данные успешно загружены!",
+    js_toast_demo_cleared: "Демо-данные успешно удалены!",
+    js_demo_loading: "Загрузка...",
+  }
+};
+
+async function changeLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  
+  // Toggle active class on lang switcher buttons
+  document.getElementById('btn-lang-uz').classList.toggle('active', lang === 'uz');
+  document.getElementById('btn-lang-ru').classList.toggle('active', lang === 'ru');
+  
+  await loadPrinters();
+  
+  const t = T[lang];
+  
+  const csvToggleLabel = document.getElementById('csv-toggle-label');
+  if (csvToggleLabel) csvToggleLabel.innerText = t.csv_toggle_label;
+
+
+  
+  // Initialize CSV Sync toggle state
+  const csvEnabled = localStorage.getItem('csv_sync_enabled') !== 'false';
+  document.getElementById('csv-toggle-input').checked = csvEnabled;
+  applyCSVSyncState(csvEnabled);
+  
+  // Header
+  document.querySelector('.pulse-container span').innerText = t.syslog_active;
+  document.getElementById('collect-btn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg> ${t.collect_btn}`;
+  document.querySelector('.dropdown > button').innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/></svg> ${t.reports_btn}`;
+  
+  const dropdownLinks = document.querySelectorAll('#reportDropdown a');
+  if (dropdownLinks.length >= 4) {
+    dropdownLinks[0].innerText = t.report_daily;
+    dropdownLinks[1].innerText = t.report_weekly;
+    dropdownLinks[2].innerText = t.report_monthly;
+    dropdownLinks[3].innerText = t.report_all;
+  }
+  
+  // Tabs
+  const tabButtons = document.querySelectorAll('.tabs .tab-btn');
+  if (tabButtons.length >= 5) {
+    tabButtons[0].childNodes[2].nodeValue = " " + t.tab_dashboard;
+    tabButtons[1].childNodes[2].nodeValue = " " + t.tab_logs;
+    tabButtons[2].childNodes[2].nodeValue = " " + t.tab_printers;
+    tabButtons[3].childNodes[2].nodeValue = " " + t.tab_upload;
+    tabButtons[4].childNodes[2].nodeValue = " " + t.tab_syslog;
+  }
+  
+  // KPI Cards Labels
+  document.querySelector('.kpi-card.kpi-accent .kpi-label').innerText = t.kpi_sheets;
+  document.querySelector('.kpi-card.kpi-accent .kpi-sub').innerText = t.kpi_sheets_sub;
+  document.querySelector('.kpi-card.kpi-blue .kpi-label').innerText = t.kpi_jobs;
+  document.querySelector('.kpi-card.kpi-blue .kpi-sub').innerText = t.kpi_jobs_sub;
+  document.querySelector('.kpi-card.kpi-purple .kpi-label').innerText = t.kpi_avg;
+  document.querySelector('.kpi-card.kpi-purple .kpi-sub').innerText = t.kpi_avg_sub;
+  document.querySelector('.kpi-card.kpi-warning .kpi-label').innerText = t.kpi_syslogs;
+  document.querySelector('.kpi-card.kpi-warning .kpi-sub').innerText = t.kpi_syslogs_sub;
+  document.querySelector('.kpi-card.kpi-danger .kpi-label').innerText = t.kpi_failed;
+  document.querySelector('.kpi-card.kpi-danger .kpi-sub').innerText = t.kpi_failed_sub;
+  
+  // Sections
+  const sections = document.querySelectorAll('.section-title');
+  if (sections.length >= 9) {
+    sections[0].childNodes[2].nodeValue = " " + t.chart_daily_title;
+    sections[1].childNodes[2].nodeValue = " " + t.chart_printer_title;
+    sections[2].childNodes[2].nodeValue = " " + t.ranking_title;
+    sections[3].childNodes[2].nodeValue = " " + t.chart_hourly_title;
+    sections[4].childNodes[2].nodeValue = " " + t.logs_title;
+    sections[5].childNodes[2].nodeValue = " " + t.printers_title;
+    sections[6].childNodes[2].nodeValue = " " + t.printers_instr_title;
+    sections[7].childNodes[2].nodeValue = " " + t.upload_title;
+    sections[8].childNodes[2].nodeValue = " " + t.syslog_instr_title;
+  }
+  
+  // Donut center label
+  const donutLabel = document.getElementById('donut-total').nextElementSibling;
+  if (donutLabel) donutLabel.innerText = t.chart_printer_center;
+  
+  // User ranking table headers
+  const userTableHeaders = document.querySelectorAll('#users-table th');
+  if (userTableHeaders.length >= 5) {
+    userTableHeaders[1].innerText = t.ranking_user;
+    userTableHeaders[2].innerText = t.ranking_sheets;
+    userTableHeaders[3].innerText = t.ranking_jobs;
+    userTableHeaders[4].innerText = t.ranking_share;
+  }
+  
+  // Logs filters & placeholders
+  document.getElementById('filter-search').placeholder = t.logs_search_placeholder;
+  document.getElementById('filter-printer').options[0].innerText = t.logs_all_printers;
+  document.getElementById('filter-source').options[0].innerText = t.logs_all_sources;
+  
+  const logButtons = document.querySelectorAll('.filter-bar button');
+  if (logButtons.length >= 2) {
+    logButtons[0].childNodes[2].nodeValue = " " + t.logs_update_btn;
+    logButtons[1].childNodes[2].nodeValue = " " + t.logs_clear_btn;
+  }
+  
+  // Logs table headers
+  const logsTableHeaders = document.querySelectorAll('.log-table th');
+  if (logsTableHeaders.length >= 9) {
+    logsTableHeaders[0].childNodes[0].nodeValue = t.logs_col_no + " ";
+    logsTableHeaders[1].childNodes[0].nodeValue = t.logs_col_time + " ";
+    logsTableHeaders[2].childNodes[0].nodeValue = t.logs_col_printer + " ";
+    logsTableHeaders[3].childNodes[0].nodeValue = t.logs_col_user + " ";
+    logsTableHeaders[4].childNodes[0].nodeValue = t.logs_col_file + " ";
+    logsTableHeaders[5].childNodes[0].nodeValue = t.logs_col_sheets + " ";
+    logsTableHeaders[6].childNodes[0].nodeValue = t.logs_col_copies + " ";
+    logsTableHeaders[7].childNodes[0].nodeValue = t.logs_col_result + " ";
+    logsTableHeaders[8].childNodes[0].nodeValue = t.logs_col_source + " ";
+  }
+  
+  // Printers sync all button
+  const syncAllBtn = document.getElementById('sync-all-btn');
+  if (syncAllBtn) {
+    syncAllBtn.childNodes[2].nodeValue = " " + t.printers_sync_all;
+  }
+  const addPrinterBtn = document.getElementById('add-printer-btn');
+  if (addPrinterBtn) {
+    addPrinterBtn.innerText = t.printers_add_btn;
+  }
+  
+  // Modal localization
+  const modalTitle = document.getElementById('modal-title');
+  if (modalTitle) {
+    const isEdit = document.getElementById('form-printer-id').value !== "";
+    modalTitle.innerText = isEdit ? t.printers_modal_edit_title : t.printers_modal_add_title;
+  }
+  const lblModalName = document.getElementById('lbl-modal-name');
+  if (lblModalName) lblModalName.innerText = t.printers_modal_name;
+  const lblModalIp = document.getElementById('lbl-modal-ip');
+  if (lblModalIp) lblModalIp.innerText = t.printers_modal_ip;
+  const btnModalCancel = document.getElementById('btn-modal-cancel');
+  if (btnModalCancel) btnModalCancel.innerText = t.printers_modal_cancel;
+  const btnModalSave = document.getElementById('btn-modal-save');
+  if (btnModalSave) btnModalSave.innerText = t.printers_modal_save;
+  
+  // Instruction texts
+  const instrTitles = document.querySelectorAll('#tab-printers .section-body h4');
+  if (instrTitles.length >= 2) {
+    instrTitles[0].innerText = t.printers_instr1_title;
+    instrTitles[0].nextElementSibling.innerHTML = t.printers_instr1_text;
+    instrTitles[1].innerText = t.printers_instr2_title;
+    instrTitles[1].nextElementSibling.innerHTML = t.printers_instr2_text;
+  }
+  
+  // Upload CSV section
+  document.querySelector('#tab-upload label').innerText = t.upload_printer_label;
+  document.querySelector('#tab-upload .upload-text').innerText = t.upload_zone_text;
+  document.querySelector('#tab-upload .upload-sub').innerText = t.upload_zone_sub;
+  
+  // Syslog step details
+  const syslogInstrHeaders = document.querySelectorAll('#tab-syslog h4');
+  if (syslogInstrHeaders.length >= 2) {
+    syslogInstrHeaders[0].innerText = t.syslog_steps_title;
+    syslogInstrHeaders[1].innerText = t.syslog_status_title;
+  }
+  
+  // Syslog steps
+  const steps = document.querySelectorAll('#tab-syslog .section-body > div > div:first-child > div > div');
+  if (steps.length >= 3) {
+    steps[0].querySelector('p').innerText = t.syslog_step1;
+    steps[1].innerHTML = t.syslog_step2;
+    steps[2].innerHTML = t.syslog_step3;
+  }
+  
+  // Syslog status labels
+  const statusLabels = document.querySelectorAll('#tab-syslog .section-body > div > div:last-child span');
+  if (statusLabels.length >= 3) {
+    statusLabels[0].innerText = t.syslog_status_label;
+    statusLabels[2].innerText = t.syslog_status_total;
+  }
+  
+  // Update charts if already initialized
+  if (chartDaily) {
+    chartDaily.data.datasets[0].label = t.js_chart_sheets_label;
+    chartDaily.update();
+  }
+  if (chartHourly) {
+    chartHourly.data.datasets[0].label = t.js_chart_jobs_label;
+    chartHourly.update();
+  }
+  
+  // Reload current tables to refresh static texts like "Noma'lum" or "Hech qanday log topilmadi"
+  if (document.getElementById('tab-logs').classList.contains('active')) {
+    loadLogs();
+  } else if (document.getElementById('tab-dashboard').classList.contains('active')) {
+    loadStats();
+  } else if (document.getElementById('tab-printers').classList.contains('active')) {
+    renderPrinterGrid();
+  } else if (document.getElementById('tab-syslog').classList.contains('active')) {
+    loadSyslogFeed();
+    loadSyslogStats();
+  }
+}
+
+// Determine local server IP
+if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+  document.getElementById('my-ip-hint').textContent = window.location.hostname;
+} else {
+  // Try to find the network IP dynamically
+  document.getElementById('my-ip-hint').textContent = window.location.host.split(':')[0];
+}
+
+// ─── TABS ───
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick') === `switchTab('${name}')`);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('tab-'+name);
+  if(panel) { panel.classList.add('active'); panel.style.display='block'; }
+  document.querySelectorAll('.tab-panel:not(.active)').forEach(p => p.style.display='none');
+  
+  if(name === 'dashboard') loadStats();
+  if(name === 'logs') loadLogs();
+  if(name === 'printers') renderPrinterGrid();
+  if(name === 'syslog') { loadSyslogFeed(); loadSyslogStats(); }
+}
+
+// ─── TOAST ───
+function showToast(title, msg, isError=false) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-msg').textContent = msg;
+  t.style.borderLeftColor = isError ? 'var(--danger)' : 'var(--accent)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ─── SYNC ALL PRINTERS ───
+async function collectAll() {
+  const btn = document.getElementById('collect-btn');
+  btn.disabled = true;
+  btn.innerHTML = T[currentLang].js_syncing;
+  try {
+    const r = await fetch('/api/collect', {method:'POST'});
+    const d = await r.json();
+    const ok = d.results.filter(x=>x.status==='ok');
+    const errs = d.results.filter(x=>x.status==='error');
+    const msg = T[currentLang].js_sync_toast_ok
+      .replace('{ok}', ok.length)
+      .replace('{saved}', d.total_saved)
+      .replace('{err}', errs.length);
+    showToast(errs.length === d.results.length ? T[currentLang].js_toast_sync_error : T[currentLang].js_toast_sync_success, msg, errs.length === d.results.length);
+    document.getElementById('last-update').textContent = T[currentLang].js_last_update + new Date().toLocaleTimeString(currentLang === 'uz' ? 'uz-UZ' : 'ru-RU');
+    loadStats();
+  } catch(e) {
+    showToast(T[currentLang].js_toast_error, e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg> ${T[currentLang].collect_btn}`;
+  }
+}
+
+// ─── SYNC ONE PRINTER ───
+async function collectOne(printerId) {
+  const card = document.getElementById('pcard-'+printerId);
+  const btn = document.getElementById('pbtn-'+printerId);
+  const statusEl = document.getElementById('pstatus-'+printerId);
+  if(card) card.classList.add('collecting');
+  if(btn) { btn.disabled=true; btn.innerHTML='<span class="spin"></span>'; }
+  if(statusEl) statusEl.innerHTML=`<span class="printer-status status-loading">${T[currentLang].printers_status_loading}</span>`;
+  try {
+    const r = await fetch('/api/collect/'+printerId, {method:'POST'});
+    const d = await r.json();
+    if(d.status==='ok') {
+      const msg = T[currentLang].js_toast_success_one
+        .replace('{found}', d.found)
+        .replace('{saved}', d.saved);
+      showToast('✅ ' + d.printer, msg);
+      if(statusEl) statusEl.innerHTML=`<span class="printer-status status-online">${T[currentLang].printers_status_ready}</span>`;
+    } else {
+      showToast(currentLang === 'uz' ? '❌ Ulanmadi' : '❌ Не удалось подключиться', d.message, true);
+      if(statusEl) statusEl.innerHTML=`<span class="printer-status status-offline">${T[currentLang].printers_status_offline}</span>`;
+    }
+    loadStats();
+  } catch(e) {
+    showToast(T[currentLang].js_toast_error, e.message, true);
+    if(statusEl) statusEl.innerHTML=`<span class="printer-status status-offline">${T[currentLang].printers_status_error}</span>`;
+  } finally {
+    if(card) card.classList.remove('collecting');
+    if(btn) { btn.disabled=false; btn.textContent=T[currentLang].printers_sync_btn; }
+  }
+}
+
+// ─── CLEAR LOGS ───
+function clearAllLogsConfirm() {
+  if (confirm(T[currentLang].js_clear_confirm)) {
+    clearLogs();
+  }
+}
+
+async function clearLogs() {
+  try {
+    const r = await fetch('/api/clear', {method: 'POST'});
+    const d = await r.json();
+    if (d.status === 'ok') {
+      showToast(T[currentLang].js_toast_cleared, T[currentLang].js_toast_cleared_msg);
+      loadStats();
+      if (document.getElementById('tab-logs').classList.contains('active')) {
+        loadLogs();
+      }
+    }
+  } catch(e) {
+    showToast(T[currentLang].js_toast_error, e.message, true);
+  }
+}
+
+
+
+// ─── PERIOD FILTER ───
+let currentPeriod = 'all';
+
+const PERIOD_LABELS = {
+  today:   'Bugungi ma\'lumotlar',
+  weekly:  'Oxirgi 7 kunlik ma\'lumotlar',
+  monthly: 'Oxirgi 30 kunlik ma\'lumotlar',
+  all:     'Ma\'lumotlar bazasidagi barcha yozuvlar',
+};
+
+function setPeriod(p) {
+  currentPeriod = p;
+  // pill faol holatini yangilash
+  ['today','weekly','monthly','all'].forEach(id => {
+    const el = document.getElementById('pill-' + id);
+    if (el) el.classList.toggle('active', id === p);
+  });
+  // info yozuv
+  const info = document.getElementById('period-info-label');
+  if (info) info.textContent = PERIOD_LABELS[p] || '';
+  loadStats();
+}
+
+// ─── LOAD STATS (DASHBOARD) ───
+async function loadStats() {
+  try {
+    const r = await fetch('/api/stats?period=' + currentPeriod);
+    const d = await r.json();
+
+    PRINTERS = d.printers || [];
+    updatePrinterSelects();
+
+    const locale = currentLang === 'uz' ? 'uz-UZ' : 'ru-RU';
+    document.getElementById('kpi-sheets').textContent = d.total_sheets.toLocaleString(locale);
+    document.getElementById('kpi-jobs').textContent = d.total_jobs.toLocaleString(locale);
+    document.getElementById('kpi-avg').textContent = d.avg_sheets.toLocaleString(locale);
+    document.getElementById('kpi-syslogs').textContent = d.syslog_count.toLocaleString(locale);
+    document.getElementById('kpi-failed').textContent = d.failed_jobs.toLocaleString(locale);
+
+    renderUsersTable(d.top_users);
+    renderDailyChart(d.daily);
+    renderPrinterChart(d.by_printer, d.total_sheets);
+    renderHourlyChart(d.hourly);
+  } catch(e) {
+    console.error('Stats error:', e);
+  }
+}
+
+// ─── USERS TABLE ───
+function renderUsersTable(users) {
+  const tbody = document.getElementById('users-tbody');
+  if(!users.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">${T[currentLang].ranking_empty}</td></tr>`;
+    return;
+  }
+  const maxSheets = users[0]?.total_sheets || 1;
+  const locale = currentLang === 'uz' ? 'uz-UZ' : 'ru-RU';
+  tbody.innerHTML = users.map((u, i) => {
+    const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
+    const pct = Math.round((u.total_sheets / maxSheets) * 100);
+    return `<tr>
+      <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+      <td style="color:var(--text-primary);font-weight:600">${u.user_name}</td>
+      <td style="font-family:var(--font-mono);color:var(--accent);font-weight:700">${u.total_sheets.toLocaleString(locale)}</td>
+      <td style="color:var(--text-secondary)">${u.jobs.toLocaleString(locale)} ${T[currentLang].ranking_jobs_count}</td>
+      <td>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <span style="font-size:10px;color:var(--text-muted)">${pct}% ${T[currentLang].ranking_activity}</span>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── DAILY LINE CHART ───
+function renderDailyChart(daily) {
+  const reversed = [...daily].reverse();
+  const labels = reversed.map(d => {
+    // Expected format: DD/MM/YYYY or DD/MM YYYY
+    const parts = d.day.split(/[/\s-]/);
+    if(parts.length >= 2) {
+      return `${parts[0]}/${parts[1]}`;
+    }
+    return d.day;
+  });
+  const data = reversed.map(d => d.total);
+
+  if(chartDaily) chartDaily.destroy();
+  const ctx = document.getElementById('chartDaily').getContext('2d');
+  
+  // Create gradient
+  const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+  gradient.addColorStop(0, 'rgba(0, 240, 194, 0.2)');
+  gradient.addColorStop(1, 'rgba(0, 240, 194, 0.0)');
+
+  chartDaily = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: T[currentLang].js_chart_sheets_label,
+        data,
+        borderColor: '#00f0c2',
+        backgroundColor: gradient,
+        tension: 0.35,
+        fill: true,
+        pointBackgroundColor: '#00f0c2',
+        pointBorderColor: '#060913',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2.5,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f1320',
+          titleFont: { family: 'Outfit', size: 12 },
+          bodyFont: { family: 'Inter', size: 12 },
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          borderWidth: 1,
+          displayColors: false,
+        }
+      },
+      scales: {
+        x: { 
+          ticks: { color: '#94a3b8', font: { size: 10, family: 'Inter' } }, 
+          grid: { color: 'rgba(255,255,255,0.03)', drawTicks: false } 
+        },
+        y: { 
+          ticks: { color: '#94a3b8', font: { size: 10, family: 'Inter' } }, 
+          grid: { color: 'rgba(255,255,255,0.03)', drawTicks: false } 
+        }
+      }
+    }
+  });
+}
+
+// ─── PRINTER DONUT CHART ───
+function renderPrinterChart(byPrinter, totalSheets) {
+  document.getElementById('donut-total').textContent = totalSheets.toLocaleString(currentLang === 'uz' ? 'uz-UZ' : 'ru-RU');
+  
+  const labels = byPrinter.map(p => {
+    const ip = p.printer_ip || '';
+    const name = p.printer_name || `Printer (${ip})`;
+    if (ip && !name.includes(ip)) {
+      return `${name} (${ip})`;
+    }
+    return name;
+  });
+  const data = byPrinter.map(p => p.total_sheets);
+  const colors = ['#00f0c2', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#10b981', '#ec4899'];
+
+  if(chartPrinter) chartPrinter.destroy();
+  chartPrinter = new Chart(document.getElementById('chartPrinter'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors.slice(0, data.length),
+        borderColor: '#0f1423',
+        borderWidth: 3,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: '#94a3b8',
+            font: { family: 'Inter', size: 11 },
+            padding: 12,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: '#0f1320',
+          titleFont: { family: 'Outfit', size: 12 },
+          bodyFont: { family: 'Inter', size: 12 },
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          borderWidth: 1,
+          callbacks: {
+            label: function(context) {
+              const val = context.parsed || 0;
+              const total = totalSheets || 1;
+              const pct = ((val / total) * 100).toFixed(1);
+              return ` ${val.toLocaleString()} varaq (${pct}%)`;
+            }
+          }
+        }
+      },
+      cutout: '70%'
+    }
+  });
+}
+
+// ─── HOURLY BAR CHART ───
+function renderHourlyChart(hourlyData) {
+  // Construct hours array (00 to 23)
+  const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
+  const data = Array(24).fill(0);
+  
+  hourlyData.forEach(h => {
+    const hrIdx = parseInt(h.hour);
+    if(hrIdx >= 0 && hrIdx < 24) {
+      data[hrIdx] = h.jobs;
+    }
+  });
+
+  if(chartHourly) chartHourly.destroy();
+  const ctx = document.getElementById('chartHourly').getContext('2d');
+  
+  const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+  gradient.addColorStop(0, '#3b82f6');
+  gradient.addColorStop(1, 'rgba(59, 130, 246, 0.15)');
+
+  chartHourly = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: hours.map(h => `${h}:00`),
+      datasets: [{
+        label: T[currentLang].js_chart_jobs_label,
+        data,
+        backgroundColor: gradient,
+        borderRadius: 4,
+        hoverBackgroundColor: '#00f0c2',
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f1320',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          borderWidth: 1,
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#94a3b8', font: { size: 9, family: 'Inter' } },
+          grid: { display: false }
+        },
+        y: {
+          ticks: { color: '#94a3b8', font: { size: 10, family: 'Inter' }, precision: 0 },
+          grid: { color: 'rgba(255,255,255,0.03)', drawTicks: false }
+        }
+      }
+    }
+  });
+}
+
+// ─── LOGS FILTERING & LOADING ───
+let filterTimeout;
+function triggerLogsFilter() {
+  clearTimeout(filterTimeout);
+  filterTimeout = setTimeout(() => {
+    loadLogs();
+  }, 300);
+}
+
+async function loadLogs() {
+  const searchVal = document.getElementById('filter-search').value.toLowerCase();
+  const printer = document.getElementById('filter-printer').value;
+  const source = document.getElementById('filter-source').value;
+  
+  const params = new URLSearchParams({limit: 250});
+  if(printer) params.set('printer', printer);
+  if(source) params.set('source', source);
+
+  try {
+    const r = await fetch('/api/logs?'+params);
+    let logs = await r.json();
+    
+    // Apply client-side search across user_name and file_name
+    if(searchVal) {
+      logs = logs.filter(l => 
+        (l.user_name && l.user_name.toLowerCase().includes(searchVal)) || 
+        (l.file_name && l.file_name.toLowerCase().includes(searchVal))
+      );
+    }
+    
+    currentLogs = logs;
+    renderLogsTable();
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function renderLogsTable() {
+  const tbody = document.getElementById('logs-tbody');
+  if(!currentLogs.length) {
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="empty-state-icon">📋</div><div>${T[currentLang].logs_empty}</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = currentLogs.map(l => `<tr>
+    <td class="mono" style="color:var(--text-muted)">${l.job_no||'—'}</td>
+    <td class="mono" style="font-size:11.5px">${l.start_time||'—'}</td>
+    <td style="color:var(--text-muted);font-size:11.5px">${l.printer_ip}</td>
+    <td style="color:var(--text-primary);font-weight:600">${l.user_name}</td>
+    <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis" title="${l.file_name}">${l.file_name||'—'}</td>
+    <td class="mono" style="color:var(--accent);font-weight:700">${l.sheets||0}</td>
+    <td class="mono" style="color:var(--text-muted)">${l.copies||1}</td>
+    <td><span class="tag ${l.result==='OK'?'tag-ok':'tag-err'}">${l.result}</span></td>
+    <td><span class="tag ${l.source==='syslog'?'tag-source-syslog':'tag-source-csv'}">${l.source === 'syslog' ? '📡 Syslog' : '📁 CSV'}</span></td>
+  </tr>`).join('');
+}
+
+// ─── SORT TABLE ───
+function sortTable(columnIndex) {
+  currentSortColumn = columnIndex;
+  sortDirection[columnIndex] = !sortDirection[columnIndex];
+  const isAscending = sortDirection[columnIndex];
+
+  // Map columns to fields
+  const fields = ['job_no', 'start_time', 'printer_ip', 'user_name', 'file_name', 'sheets', 'copies', 'result', 'source'];
+  const field = fields[columnIndex];
+
+  currentLogs.sort((a, b) => {
+    let valA = a[field];
+    let valB = b[field];
+
+    // Handle null values
+    if (valA === null || valA === undefined) valA = '';
+    if (valB === null || valB === undefined) valB = '';
+
+    // Convert strings to lowercase if applicable
+    if (typeof valA === 'string') valA = valA.toLowerCase();
+    if (typeof valB === 'string') valB = valB.toLowerCase();
+
+    // Check if numeric
+    const numA = Number(valA);
+    const numB = Number(valB);
+    if (!isNaN(numA) && !isNaN(numB) && valA !== '' && valB !== '') {
+      return isAscending ? numA - numB : numB - numA;
+    }
+
+    if (valA < valB) return isAscending ? -1 : 1;
+    if (valA > valB) return isAscending ? 1 : -1;
+    return 0;
+  });
+
+  // Render icons
+  for (let i = 0; i <= 8; i++) {
+    const iconSpan = document.getElementById(`sort-icon-${i}`);
+    if (i === columnIndex) {
+      iconSpan.innerHTML = isAscending ? '▲' : '▼';
+      iconSpan.style.color = 'var(--accent)';
+    } else {
+      iconSpan.innerHTML = '';
+    }
+  }
+
+  renderLogsTable();
+}
+
+// ─── PRINTER GRID ───
+function renderPrinterGrid() {
+  const grid = document.getElementById('printer-grid');
+  const t = T[currentLang];
+  grid.innerHTML = PRINTERS.map(p => `
+    <div class="printer-card" id="pcard-${p.id}">
+      <div class="printer-card-actions" style="position:absolute;top:12px;right:12px;display:flex;gap:6px;z-index:10;">
+        <button class="btn-icon" onclick="openPrinterForm(${p.id}, '${p.name}', '${p.ip}')" style="background:rgba(255,255,255,0.05);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;transition:all 0.2s;" title="${t.printers_modal_edit_title}">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </button>
+        <button class="btn-icon btn-icon-danger" onclick="deletePrinter(${p.id}, '${p.name}')" style="background:rgba(239,68,68,0.08);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;color:var(--danger);display:flex;align-items:center;justify-content:center;transition:all 0.2s;" title="${t.logs_clear_btn}">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </div>
+      <div class="printer-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5z"/></svg>
+      </div>
+      <div class="printer-name">${p.name}</div>
+      <div class="printer-ip">${p.ip}</div>
+      <div id="pstatus-${p.id}">
+        <span class="printer-status status-online">${t.printers_status_ready}</span>
+      </div>
+      <button class="btn btn-primary printer-collect-btn" id="pbtn-${p.id}" onclick="collectOne(${p.id})">
+        ${t.printers_sync_btn}
+      </button>
+    </div>
+  `).join('');
+}
+
+// ─── CSV UPLOAD ───
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) uploadCSV(file);
+}
+
+async function uploadCSV(file) {
+  if(!file) return;
+  const printerId = document.getElementById('upload-printer-select').value;
+  const form = new FormData();
+  form.append('file', file);
+  form.append('printer_id', printerId);
+
+  const result = document.getElementById('upload-result');
+  result.style.display = 'block';
+  const t = T[currentLang];
+  result.innerHTML = '<div style="color:var(--text-secondary);font-size:13px"><span class="spin"></span> ' + t.js_uploading + ' ' + file.name + '</div>';
+
+  try {
+    const r = await fetch('/api/upload-csv', {method:'POST', body:form});
+    const d = await r.json();
+    if(d.status==='ok') {
+      if (currentLang === 'uz') {
+        result.innerHTML = `<div style="background:var(--success-glow);border:1px solid rgba(16, 185, 129, 0.3);border-radius:10px;padding:16px;font-size:13.5px;color:var(--success)">
+          <strong>✅ ${file.name}</strong> muvaffaqiyatli yuklandi va qayta ishlandi.<br>
+          <span style="color:var(--text-secondary);font-size:12px">Jami topilgan loglar: ${d.found} ta | Yangi saqlanganlar: ${d.saved} ta</span>
+        </div>`;
+        showToast('✅ CSV Yuklandi', `${d.saved} ta yangi log saqlandi`);
+      } else {
+        result.innerHTML = `<div style="background:var(--success-glow);border:1px solid rgba(16, 185, 129, 0.3);border-radius:10px;padding:16px;font-size:13.5px;color:var(--success)">
+          <strong>✅ ${file.name}</strong> успешно загружен и обработан.<br>
+          <span style="color:var(--text-secondary);font-size:12px">Всего найдено логов: ${d.found} | Новых сохранено: ${d.saved}</span>
+        </div>`;
+        showToast('✅ CSV Загружен', `Сохранено ${d.saved} новых логов`);
+      }
+      loadStats();
+    } else {
+      result.innerHTML = `<div style="color:var(--danger)">❌ ${t.js_toast_error}: ${d.error}</div>`;
+    }
+  } catch(e) {
+    result.innerHTML = `<div style="color:var(--danger)">❌ ${e.message}</div>`;
+  }
+}
+
+// ─── SYSLOG LIVE CONSOLE ───
+async function loadSyslogFeed() {
+  try {
+    const r = await fetch('/api/syslog-feed');
+    const rows = await r.json();
+    const tbody = document.getElementById('syslog-feed-tbody');
+    if(!rows.length) {
+      tbody.innerHTML = `<div class="term-line" style="color:var(--text-muted)">${T[currentLang].syslog_waiting}</div>`;
+      return;
+    }
+    
+    tbody.innerHTML = rows.map(r => {
+      let styledRaw = r.raw;
+      // Highlight terms in syslog data
+      if (r.raw.toLowerCase().includes('print')) {
+        styledRaw = r.raw.replace(/print/gi, '<span class="term-print">$&</span>');
+      } else if (r.raw.toLowerCase().includes('copy')) {
+        styledRaw = r.raw.replace(/copy/gi, '<span class="term-copy">$&</span>');
+      }
+      return `<div class="term-line">
+        <span class="term-time">[${r.received}]</span> 
+        <span class="term-ip">${r.sender_ip}</span>: 
+        <span class="term-data">${styledRaw}</span>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function loadSyslogStats() {
+  try {
+    const r = await fetch('/api/stats');
+    const d = await r.json();
+    document.getElementById('syslog-total-count').textContent = (d.syslog_count||0).toLocaleString('uz-UZ');
+    document.getElementById('syslog-port-badge').textContent = `UDP: ${d.syslog_port||5140}`;
+  } catch(e) {}
+}
+
+// Auto-refresh syslog feed
+setInterval(() => {
+  if(document.getElementById('tab-syslog').classList.contains('active')) {
+    loadSyslogFeed();
+    loadSyslogStats();
+  }
+}, 5000);
+
+// Dropdown toggle
+function toggleDropdown(e) {
+  e.stopPropagation();
+  document.getElementById("reportDropdown").classList.toggle("show");
+}
+
+// Close dropdown when clicking outside
+window.addEventListener('click', function(e) {
+  const dropdown = document.getElementById("reportDropdown");
+  if (dropdown && dropdown.classList.contains('show')) {
+    if (!e.target.closest('.dropdown')) {
+      dropdown.classList.remove('show');
+    }
+  }
+});
+
+// ─── TONER LEVELS ───
+async function loadTonerLevels() {
+  try {
+    const r = await fetch('/api/toner');
+    const data = await r.json();
+    const grid = document.getElementById('toner-grid');
+    if (!data || !data.length) {
+      grid.innerHTML = '<div style="color:var(--text-muted);text-align:center;width:100%">Printerlar topilmadi</div>';
+      return;
+    }
+    
+    grid.innerHTML = data.map(p => `
+      <div class="printer-card" style="padding:16px;">
+        <div class="printer-name">${p.name}</div>
+        <div class="printer-ip">${p.ip}</div>
+        <div style="margin-top:16px;text-align:left">
+          
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span>Qora (Black)</span><span style="font-weight:bold">${p.levels.black}%</span>
+          </div>
+          <div class="progress-bar" style="margin-bottom:12px;background:rgba(255,255,255,0.08)">
+            <div class="progress-fill" style="width:${p.levels.black}%; background:#94a3b8"></div>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span>Havorang (Cyan)</span><span style="font-weight:bold">${p.levels.cyan}%</span>
+          </div>
+          <div class="progress-bar" style="margin-bottom:12px;background:rgba(255,255,255,0.08)">
+            <div class="progress-fill" style="width:${p.levels.cyan}%; background:#06b6d4"></div>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span>Pushti (Magenta)</span><span style="font-weight:bold">${p.levels.magenta}%</span>
+          </div>
+          <div class="progress-bar" style="margin-bottom:12px;background:rgba(255,255,255,0.08)">
+            <div class="progress-fill" style="width:${p.levels.magenta}%; background:#d946ef"></div>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span>Sariq (Yellow)</span><span style="font-weight:bold">${p.levels.yellow}%</span>
+          </div>
+          <div class="progress-bar" style="margin-bottom:12px;background:rgba(255,255,255,0.08)">
+            <div class="progress-fill" style="width:${p.levels.yellow}%; background:#f59e0b"></div>
+          </div>
+
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error('Toner xatosi:', e);
+  }
+}
+
+// ─── INIT ───
+const initialLang = localStorage.getItem('lang') || 'uz';
+changeLanguage(initialLang);
+loadTonerLevels();
+setInterval(() => {
+  if (document.getElementById('tab-printers').classList.contains('active')) {
+    loadTonerLevels();
+  }
+}, 60000); // Har daqiqada yangilanib turadi
+
+</script>
+
+<!-- KPI Modal -->
+<div class="modal-overlay" id="kpi-modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">KPI Hisobotini Yuklash</div>
+      <button class="modal-close" onclick="closeKpiModal()">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Oyni tanlang (YYYY-MM)</label>
+      <input type="month" id="kpi-month">
+    </div>
+    <button class="btn btn-primary" style="width: 100%; justify-content: center" onclick="downloadKpi()">
+      Yuklab olish
+    </button>
+  </div>
+</div>
+
+<script>
+function openKpiModal(e) {
+  if (e) e.preventDefault();
+  const d = new Date();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  document.getElementById('kpi-month').value = `${d.getFullYear()}-${month}`;
+  document.getElementById('kpi-modal').classList.add('show');
+}
+function closeKpiModal() {
+  document.getElementById('kpi-modal').classList.remove('show');
+}
+function downloadKpi() {
+  const m = document.getElementById('kpi-month').value;
+  if (!m) return alert("Oyni tanlang");
+  window.location.href = "/api/export-kpi?month=" + m;
+  closeKpiModal();
+}
+</script>
+
+</body>
+</html>

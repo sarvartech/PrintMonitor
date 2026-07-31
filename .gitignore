@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+scratch/
+.system_generated/
+.idea/
+.vscode/
+.DS_Store
+root@172.17.0.78
+PrintMonitor.zip
