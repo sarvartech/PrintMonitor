@@ -5,7 +5,7 @@ import openpyxl
 import io
 import os
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "canon_logs.db")
+DB_PATH = os.environ.get("DB_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "canon_logs.db"))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH = os.path.join(BASE_DIR, "kpi_template.xlsx")
 

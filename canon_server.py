@@ -26,9 +26,10 @@ log = logging.getLogger("canon")
 app = Flask(__name__)
 CORS(app)
 
-DB_PATH = "canon_logs.db"
-SYSLOG_PORT = 5140          # Printerda ham shu port kiritiladi
-SYSLOG_HOST = "0.0.0.0"
+DB_PATH = os.environ.get("DB_PATH", "canon_logs.db")
+SYSLOG_PORT = int(os.environ.get("SYSLOG_PORT", 5140))  # Printerda ham shu port kiritiladi
+SYSLOG_HOST = os.environ.get("SYSLOG_HOST", "0.0.0.0")
+WEB_PORT = int(os.environ.get("WEB_PORT", 5000))
 
 # Printers configuration is stored in the sqlite 'printers' table.
 
@@ -666,6 +667,16 @@ def syslog_server():
 
 # ─── FLASK API ───────────────────────────────────────────────────────
 
+@app.route("/api/health")
+def health():
+    return jsonify({
+        "status": "healthy",
+        "service": "Canon Print Monitor",
+        "version": "1.0.0",
+        "timestamp": datetime.now().isoformat()
+    })
+
+
 @app.route("/")
 def index():
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "canon_dashboard.html")
@@ -836,7 +847,7 @@ def get_printers_api():
     conn.close()
     return jsonify(printers)
 
-CACHE_FILE = "toner_cache.json"
+CACHE_FILE = os.environ.get("TONER_CACHE_FILE", "toner_cache.json")
 TONER_CACHE = {}
 
 def load_cache():
@@ -1452,7 +1463,7 @@ if __name__ == "__main__":
 
     print("=" * 55)
     print("  Canon Print Log Monitor ishga tushdi!")
-    print(f"  Dashboard:     http://localhost:5000")
+    print(f"  Dashboard:     http://localhost:{WEB_PORT}")
     print(f"  Syslog port:   UDP {SYSLOG_PORT}")
     print("  Auto-Sync:     Har 10 daqiqada avtomatik sinxronlash")
     print("=" * 55)
@@ -1465,4 +1476,4 @@ if __name__ == "__main__":
     print("  Connection Type: UDP")
     print("=" * 55)
 
-    app.run(debug=False, host="0.0.0.0", port=5000, use_reloader=False)
+    app.run(debug=False, host="0.0.0.0", port=WEB_PORT, use_reloader=False)

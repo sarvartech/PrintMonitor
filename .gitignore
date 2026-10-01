@@ -13,3 +13,5 @@ scratch/
 .DS_Store
 root@172.17.0.78
 PrintMonitor.zip
+PrintMonitor_Prod_Install.zip
+*.zip
